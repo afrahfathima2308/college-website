@@ -18,11 +18,29 @@ connectDB();
 
 // CORS - Allow frontend to communicate with backend
 app.use(cors({
-    origin: [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        process.env.FRONTEND_URL
-    ].filter(Boolean),
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        const allowedOrigins = [
+            'http://localhost:5173',
+            'http://127.0.0.1:5173',
+            process.env.FRONTEND_URL,
+            'https://college-portal-frontend-chi.vercel.app' // Hardcode the proven URL
+        ];
+
+        // Check if origin matches any allowed origin (handling trailing slashes)
+        const isAllowed = allowedOrigins.some(allowed =>
+            allowed && (origin === allowed || origin === allowed + '/')
+        );
+
+        if (isAllowed || process.env.NODE_ENV !== 'production') {
+            callback(null, true);
+        } else {
+            console.log('Blocked by CORS:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 
@@ -50,6 +68,11 @@ app.get('/api/health', (req, res) => {
         timestamp: new Date().toISOString(),
         environment: config.nodeEnv
     });
+});
+
+// Root route for easy verification
+app.get('/', (req, res) => {
+    res.send('College Portal API is Running 🚀');
 });
 
 // Authentication routes
