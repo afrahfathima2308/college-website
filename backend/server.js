@@ -71,7 +71,11 @@ if (config.nodeEnv === 'development') {
 // ROUTES
 // ======================
 
-// Health check endpoint
+// Basic Health Check (both at / and /api/health)
+app.get('/health', (req, res) => {
+    res.json({ success: true, message: 'Server is healthy', timestamp: new Date() });
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         success: true,
@@ -81,7 +85,7 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Root route for easy verification
+// Root route
 app.get('/', (req, res) => {
     res.send('College Portal API is Running 🚀');
 });
