@@ -12,8 +12,7 @@ const config = {
 
 // Validate required environment variables
 if (!config.jwtSecret) {
-  console.error('ERROR: JWT_SECRET is not defined in environment variables');
-  process.exit(1);
+  console.warn('WARNING: JWT_SECRET is not defined in environment variables. Authentication will fail.');
 }
 
 module.exports = config;

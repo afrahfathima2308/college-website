@@ -114,15 +114,15 @@ app.use(errorHandler);
 // ======================
 const PORT = config.port;
 
-// Use 0.0.0.0 to listen on all interfaces (necessary for Vercel/Docker/Cloud)
-const HOST = '0.0.0.0';
-
-app.listen(PORT, HOST, () => {
-    console.log(`\n🚀 Server running on http://${HOST}:${PORT}`);
-    console.log(`📍 Environment: ${config.nodeEnv}`);
-    console.log(`🔗 API URL: http://${HOST}:${PORT}/api`);
-    console.log(`💚 Health Check: http://${HOST}:${PORT}/api/health\n`);
-});
+// Only start the server if we're not being imported (e.g. by Vercel's runner)
+if (require.main === module) {
+    app.listen(PORT, HOST, () => {
+        console.log(`\n🚀 Server running on http://${HOST}:${PORT}`);
+        console.log(`📍 Environment: ${config.nodeEnv}`);
+        console.log(`🔗 API URL: http://${HOST}:${PORT}/api`);
+        console.log(`💚 Health Check: http://${HOST}:${PORT}/api/health\n`);
+    });
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
