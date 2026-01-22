@@ -116,6 +116,7 @@ const PORT = config.port;
 
 // Only start the server if we're not being imported (e.g. by Vercel's runner)
 if (require.main === module) {
+    const HOST = '0.0.0.0';
     app.listen(PORT, HOST, () => {
         console.log(`\n🚀 Server running on http://${HOST}:${PORT}`);
         console.log(`📍 Environment: ${config.nodeEnv}`);
@@ -127,7 +128,7 @@ if (require.main === module) {
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
     console.error('❌ Unhandled Rejection:', err);
-    process.exit(1);
+    // Do not call process.exit(1) on Vercel
 });
 
 module.exports = app;
