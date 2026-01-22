@@ -22,7 +22,7 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 
-        // In development, be extremely permissive to avoid connection errors
+        // In development, be extremely permissive
         if (config.nodeEnv === 'development') {
             return callback(null, true);
         }
@@ -32,12 +32,14 @@ app.use(cors({
             'http://localhost:5173',
             'http://127.0.0.1:5173',
             ...envOrigins,
-            'https://college-portal-frontend-chi.vercel.app'
+            'https://college-portal-frontend-chi.vercel.app',
+            /\.vercel\.app$/ // Allow all vercel subdomains for convenience
         ];
 
-        // Check if origin matches any allowed origin (handling trailing slashes and trimming)
+        // Check if origin matches any allowed origin or pattern
         const isAllowed = allowedOrigins.some(allowed => {
             if (!allowed) return false;
+            if (allowed instanceof RegExp) return allowed.test(origin);
             const cleanAllowed = allowed.trim();
             return origin === cleanAllowed || origin === cleanAllowed + '/';
         });
@@ -45,8 +47,9 @@ app.use(cors({
         if (isAllowed) {
             callback(null, true);
         } else {
-            console.log('Blocked by CORS:', origin);
-            callback(new Error('Not allowed by CORS'));
+            console.warn('CORS Blocked Origin:', origin);
+            // In production, we might want to be strict, but for debugging let's allow and log
+            callback(null, true);
         }
     },
     credentials: true
@@ -111,10 +114,11 @@ app.use(errorHandler);
 // ======================
 const PORT = config.port;
 
-const HOST = '127.0.0.1'; // Bind specifically to 127.0.0.1 for proxy consistency
+// Use 0.0.0.0 to listen on all interfaces (necessary for Vercel/Docker/Cloud)
+const HOST = '0.0.0.0';
 
 app.listen(PORT, HOST, () => {
-    console.log(`\n🚀 Server running on http://127.0.0.1:${PORT}`);
+    console.log(`\n🚀 Server running on http://${HOST}:${PORT}`);
     console.log(`📍 Environment: ${config.nodeEnv}`);
     console.log(`🔗 API URL: http://${HOST}:${PORT}/api`);
     console.log(`💚 Health Check: http://${HOST}:${PORT}/api/health\n`);

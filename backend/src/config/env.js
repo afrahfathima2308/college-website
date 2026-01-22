@@ -6,7 +6,8 @@ const config = {
   jwtSecret: process.env.JWT_SECRET,
   jwtExpire: process.env.JWT_EXPIRE || '7d',
   nodeEnv: process.env.NODE_ENV || 'development',
-  firstAdminEmail: process.env.FIRST_ADMIN_EMAIL || ''
+  firstAdminEmail: process.env.FIRST_ADMIN_EMAIL || '',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173'
 };
 
 // Validate required environment variables
