@@ -3,7 +3,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://college-website-lake.vercel.app/api/:path*"
+            "destination": "https://college-website-backend-red.vercel.app/api/:path*"
         },
         {
             "source": "/(.*)",
