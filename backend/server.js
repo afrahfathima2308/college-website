@@ -22,6 +22,11 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 
+        // In development, be extremely permissive to avoid connection errors
+        if (config.nodeEnv === 'development') {
+            return callback(null, true);
+        }
+
         const envOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : [];
         const allowedOrigins = [
             'http://localhost:5173',
@@ -37,7 +42,7 @@ app.use(cors({
             return origin === cleanAllowed || origin === cleanAllowed + '/';
         });
 
-        if (isAllowed || process.env.NODE_ENV !== 'production') {
+        if (isAllowed) {
             callback(null, true);
         } else {
             console.log('Blocked by CORS:', origin);
@@ -51,10 +56,10 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Request logging (development only)
+// Request logging (EVERY REQUEST in development)
 if (config.nodeEnv === 'development') {
     app.use((req, res, next) => {
-        console.log(`${req.method} ${req.path}`);
+        console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.path}`);
         next();
     });
 }
@@ -106,11 +111,13 @@ app.use(errorHandler);
 // ======================
 const PORT = config.port;
 
-app.listen(PORT, () => {
-    console.log(`\n🚀 Server running on port ${PORT}`);
+const HOST = '127.0.0.1'; // Bind specifically to 127.0.0.1 for proxy consistency
+
+app.listen(PORT, HOST, () => {
+    console.log(`\n🚀 Server running on http://127.0.0.1:${PORT}`);
     console.log(`📍 Environment: ${config.nodeEnv}`);
-    console.log(`🔗 API URL: http://localhost:${PORT}/api`);
-    console.log(`💚 Health Check: http://localhost:${PORT}/api/health\n`);
+    console.log(`🔗 API URL: http://${HOST}:${PORT}/api`);
+    console.log(`💚 Health Check: http://${HOST}:${PORT}/api/health\n`);
 });
 
 // Handle unhandled promise rejections

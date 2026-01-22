@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -18,9 +18,45 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+    const [backendStatus, setBackendStatus] = useState({ online: false, checking: true, error: null });
 
     const { login, register } = useAuth();
     const navigate = useNavigate();
+
+    // Check backend health on mount and every 5 seconds
+    const checkStatus = async () => {
+        setBackendStatus(prev => ({ ...prev, checking: true }));
+        try {
+            const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api';
+            console.log('Checking health at:', `${apiBase}/health`);
+
+            const res = await fetch(`${apiBase}/health`, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' },
+                mode: 'cors',
+                cache: 'no-cache'
+            });
+
+            if (res.ok) {
+                setBackendStatus({ online: true, checking: false, error: null });
+            } else {
+                setBackendStatus({ online: false, checking: false, error: `Server returned ${res.status} ${res.statusText}` });
+            }
+        } catch (err) {
+            console.error('Health Check Failed:', err);
+            let msg = err.message;
+            if (msg === 'Failed to fetch') {
+                msg = 'Connection Refused (Is the backend running?)';
+            }
+            setBackendStatus({ online: false, checking: false, error: msg });
+        }
+    };
+
+    useEffect(() => {
+        checkStatus();
+        const interval = setInterval(checkStatus, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     // Handle role button click - sets user type and shows form
     const handleRoleSelection = (role) => {
@@ -56,6 +92,7 @@ const LoginPage = () => {
         }
 
         try {
+            console.log('Attempting login to:', import.meta.env.VITE_API_URL);
             const result = await login(email, password);
             if (result.success) {
                 setSuccess('Login successful! Redirecting to dashboard...');
@@ -65,10 +102,16 @@ const LoginPage = () => {
                 }, 1000);
             } else {
                 setError(result.message || 'Login failed. Please try again.');
+                console.error('Login Result Error:', result);
             }
         } catch (err) {
-            console.error('Login Error:', err);
-            setError(err.response?.data?.message || err.message || 'An error occurred. Please try again.');
+            console.error('Detailed Login Error:', {
+                message: err.message,
+                code: err.code,
+                config: err.config,
+                response: err.response?.data
+            });
+            setError(`Connection Error: ${err.message}. Please ensure the backend server is running at ${import.meta.env.VITE_API_URL}`);
         } finally {
             setLoading(false);
         }
@@ -223,7 +266,43 @@ const LoginPage = () => {
                         {/* LOGIN TAB */}
                         {activeTab === 'login' && (
                             <div>
-                                <h1 className="text-3xl font-bold text-black mb-6">Login to Portal</h1>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h1 className="text-3xl font-bold text-black">Login to Portal</h1>
+
+                                    {/* Backend Status Indicator */}
+                                    <div className="flex flex-col items-end space-y-2">
+                                        <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1.5 ${backendStatus.checking ? 'bg-gray-100 text-gray-500' :
+                                            backendStatus.online ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                            }`}>
+                                            <div className={`w-2 h-2 rounded-full ${backendStatus.checking ? 'bg-gray-400 animate-pulse' :
+                                                backendStatus.online ? 'bg-green-500' : 'bg-red-500'
+                                                }`} />
+                                            <span>
+                                                {backendStatus.checking ? 'Checking Connection...' :
+                                                    backendStatus.online ? 'Backend: Online' : 'Backend: Offline'}
+                                            </span>
+                                        </div>
+                                        {!backendStatus.online && !backendStatus.checking && (
+                                            <button
+                                                onClick={checkStatus}
+                                                className="text-[10px] text-blue-600 hover:underline flex items-center space-x-1"
+                                            >
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                                <span>Retry Connection</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Connection Error Details */}
+                                {!backendStatus.online && !backendStatus.checking && (
+                                    <div className="mb-4 p-2 bg-red-50 text-red-600 text-xs border border-red-200 rounded">
+                                        <p><strong>Connection Issue:</strong> {backendStatus.error}</p>
+                                        <p className="mt-1">Please ensure your backend is running at {import.meta.env.VITE_API_URL}</p>
+                                    </div>
+                                )}
 
                                 {/* Role Selection Buttons */}
                                 <div className="mb-6">
