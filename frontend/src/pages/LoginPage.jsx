@@ -12,7 +12,6 @@ const LoginPage = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        confirmPassword: '',
         role: 'student',
         branch: ''
     });
@@ -68,7 +67,8 @@ const LoginPage = () => {
                 setError(result.message || 'Login failed. Please try again.');
             }
         } catch (err) {
-            setError('An error occurred. Please try again.');
+            console.error('Login Error:', err);
+            setError(err.response?.data?.message || err.message || 'An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -103,8 +103,6 @@ const LoginPage = () => {
         try {
             const result = await register({
                 name: registerData.name,
-                email: registerData.email,
-                password: registerData.password,
                 email: registerData.email,
                 password: registerData.password,
                 role: registerData.role,

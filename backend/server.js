@@ -22,17 +22,20 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 
+        const envOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : [];
         const allowedOrigins = [
             'http://localhost:5173',
             'http://127.0.0.1:5173',
-            process.env.FRONTEND_URL,
-            'https://college-portal-frontend-chi.vercel.app' // Hardcode the proven URL
+            ...envOrigins,
+            'https://college-portal-frontend-chi.vercel.app'
         ];
 
-        // Check if origin matches any allowed origin (handling trailing slashes)
-        const isAllowed = allowedOrigins.some(allowed =>
-            allowed && (origin === allowed || origin === allowed + '/')
-        );
+        // Check if origin matches any allowed origin (handling trailing slashes and trimming)
+        const isAllowed = allowedOrigins.some(allowed => {
+            if (!allowed) return false;
+            const cleanAllowed = allowed.trim();
+            return origin === cleanAllowed || origin === cleanAllowed + '/';
+        });
 
         if (isAllowed || process.env.NODE_ENV !== 'production') {
             callback(null, true);
