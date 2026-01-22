@@ -12,7 +12,6 @@ const LoginPage = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        confirmPassword: '',
         role: 'student',
         branch: ''
     });
@@ -103,8 +102,6 @@ const LoginPage = () => {
         try {
             const result = await register({
                 name: registerData.name,
-                email: registerData.email,
-                password: registerData.password,
                 email: registerData.email,
                 password: registerData.password,
                 role: registerData.role,
