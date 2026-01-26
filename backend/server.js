@@ -96,6 +96,14 @@ app.use('/api/auth', authRoutes);
 // Booking routes
 app.use('/api/bookings', bookingRoutes);
 
+// Chatbot routes
+const chatbotRoutes = require('./src/routes/chatbotRoutes');
+app.use('/api/chatbot', chatbotRoutes);
+
+// Announcement routes
+const announcementRoutes = require('./src/routes/announcementRoutes');
+app.use('/api/announcements', announcementRoutes);
+
 // Marks routes
 const markRoutes = require('./src/routes/markRoutes');
 app.use('/api/marks', markRoutes);
