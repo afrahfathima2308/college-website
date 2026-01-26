@@ -1874,8 +1874,18 @@
 
 @media (max-width: 768px) {
   .notice-board-container {
-    display: none;
-    /* Hide on smaller screens to avoid clutter */
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-height: 350px;
+    margin-top: 20px;
+    border-radius: 12px;
+    z-index: 10;
+  }
+
+  .notice-board-scroll-wrapper {
+    height: 250px;
   }
 
   .announcement-modal {
