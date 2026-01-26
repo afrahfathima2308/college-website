@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import NoticeBoard from '../components/NoticeBoard';
 
 const HomePage = () => {
     const departments = [
@@ -126,7 +127,7 @@ const HomePage = () => {
                             </p>
                             <Link
                                 to="/about"
-                                    className="inline-flex items-center px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold"
+                                className="inline-flex items-center px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold"
                             >
                                 Read More
                                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -220,7 +221,7 @@ const HomePage = () => {
                     <div className="text-center mt-12">
                         <Link
                             to="/facilities"
-                                className="inline-block px-8 py-3 bg-white text-orange-600 rounded-lg hover:bg-gray-50 transition-colors font-semibold shadow-md"
+                            className="inline-block px-8 py-3 bg-white text-orange-600 rounded-lg hover:bg-gray-50 transition-colors font-semibold shadow-md"
                         >
                             Explore All Facilities
                         </Link>
@@ -253,6 +254,9 @@ const HomePage = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Notice Board Widget */}
+            <NoticeBoard />
         </div>
     );
 };
