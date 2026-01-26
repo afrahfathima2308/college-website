@@ -100,6 +100,10 @@ app.use('/api/bookings', bookingRoutes);
 const markRoutes = require('./src/routes/markRoutes');
 app.use('/api/marks', markRoutes);
 
+// Attendance routes
+const attendanceRoutes = require('./src/routes/attendanceRoutes');
+app.use('/api/attendance', attendanceRoutes);
+
 // 404 handler for undefined routes
 app.use((req, res, next) => {
     res.status(404).json({

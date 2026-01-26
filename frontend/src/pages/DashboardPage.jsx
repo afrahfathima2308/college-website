@@ -2,12 +2,14 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import BookingDashboard from './BookingDashboard';
 import MarksDashboard from './MarksDashboard';
+import FacultyAttendance from './FacultyAttendance';
+import StudentAttendance from './StudentAttendance';
 import { useState } from 'react';
 
 const DashboardPage = () => {
     const { user, logout } = useAuth();
 
-    const [activeTab, setActiveTab] = useState('bookings'); // 'bookings' or 'marks'
+    const [activeTab, setActiveTab] = useState('bookings'); // 'bookings', 'marks', or 'attendance'
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -30,8 +32,8 @@ const DashboardPage = () => {
                             <button
                                 onClick={() => setActiveTab('bookings')}
                                 className={`px-4 py-2 font-semibold rounded-lg transition-colors ${activeTab === 'bookings'
-                                        ? 'bg-orange-100 text-orange-700'
-                                        : 'text-gray-600 hover:text-orange-600'
+                                    ? 'bg-orange-100 text-orange-700'
+                                    : 'text-gray-600 hover:text-orange-600'
                                     }`}
                             >
                                 📅 Bookings
@@ -39,11 +41,20 @@ const DashboardPage = () => {
                             <button
                                 onClick={() => setActiveTab('marks')}
                                 className={`px-4 py-2 font-semibold rounded-lg transition-colors ${activeTab === 'marks'
-                                        ? 'bg-orange-100 text-orange-700'
-                                        : 'text-gray-600 hover:text-orange-600'
+                                    ? 'bg-orange-100 text-orange-700'
+                                    : 'text-gray-600 hover:text-orange-600'
                                     }`}
                             >
                                 📊 Marks
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('attendance')}
+                                className={`px-4 py-2 font-semibold rounded-lg transition-colors ${activeTab === 'attendance'
+                                    ? 'bg-orange-100 text-orange-700'
+                                    : 'text-gray-600 hover:text-orange-600'
+                                    }`}
+                            >
+                                ✅ Attendance
                             </button>
                         </div>
 
@@ -54,8 +65,8 @@ const DashboardPage = () => {
                                 <p className="text-xs text-gray-600">{user?.email}</p>
                                 <p className="text-xs mt-1">
                                     <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${user?.role === 'admin' ? 'bg-orange-100 text-orange-800' :
-                                            user?.role === 'faculty' ? 'bg-orange-100 text-orange-800' :
-                                                'bg-orange-100 text-orange-800'
+                                        user?.role === 'faculty' ? 'bg-orange-100 text-orange-800' :
+                                            'bg-orange-100 text-orange-800'
                                         }`}>
                                         {user?.role?.toUpperCase()}
                                     </span>
@@ -81,24 +92,36 @@ const DashboardPage = () => {
             </header>
 
             {/* Mobile Tab Helper */}
-            <div className="md:hidden bg-white border-t p-2 flex justify-center space-x-4">
+            <div className="md:hidden bg-white border-t p-2 flex justify-center space-x-2">
                 <button
                     onClick={() => setActiveTab('bookings')}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg ${activeTab === 'bookings' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'}`}
+                    className={`px-3 py-2 text-sm font-semibold rounded-lg ${activeTab === 'bookings' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'}`}
                 >
                     📅 Bookings
                 </button>
                 <button
                     onClick={() => setActiveTab('marks')}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg ${activeTab === 'marks' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'}`}
+                    className={`px-3 py-2 text-sm font-semibold rounded-lg ${activeTab === 'marks' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'}`}
                 >
                     📊 Marks
+                </button>
+                <button
+                    onClick={() => setActiveTab('attendance')}
+                    className={`px-3 py-2 text-sm font-semibold rounded-lg ${activeTab === 'attendance' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'}`}
+                >
+                    ✅ Attendance
                 </button>
             </div>
 
             {/* Main Content */}
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {activeTab === 'bookings' ? <BookingDashboard /> : <MarksDashboard />}
+                {activeTab === 'bookings' ? (
+                    <BookingDashboard />
+                ) : activeTab === 'marks' ? (
+                    <MarksDashboard />
+                ) : (
+                    user?.role === 'student' ? <StudentAttendance /> : <FacultyAttendance />
+                )}
             </main>
         </div>
     );

@@ -146,4 +146,37 @@ export const marksAPI = {
     }
 };
 
+// ======================
+// ATTENDANCE API CALLS
+// ======================
+
+export const attendanceAPI = {
+    // Mark attendance (Faculty only)
+    markAttendance: async (attendanceData) => {
+        const response = await api.post('/attendance/mark', attendanceData);
+        return response.data;
+    },
+
+    // Update attendance (Faculty only)
+    updateAttendance: async (id, updateData) => {
+        const response = await api.put(`/attendance/update/${id}`, updateData);
+        return response.data;
+    },
+
+    // Get my attendance (Student only)
+    getMyAttendance: async () => {
+        const response = await api.get('/attendance/my');
+        return response.data;
+    },
+
+    // Get attendance by branch (Faculty only)
+    getAttendanceByBranch: async (branch, date, period) => {
+        const params = new URLSearchParams();
+        if (date) params.append('date', date);
+        if (period) params.append('period', period);
+        const response = await api.get(`/attendance/branch/${branch}?${params.toString()}`);
+        return response.data;
+    }
+};
+
 export default api;
