@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ChatbotWidget from './components/ChatbotWidget';
 
 // Public Pages
 import HomePage from './pages/HomePage';
@@ -65,6 +66,9 @@ function App() {
           {/* Catch all - redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+
+        {/* Chatbot Widget - Available on all pages */}
+        <ChatbotWidget />
       </BrowserRouter>
     </AuthProvider>
   );
